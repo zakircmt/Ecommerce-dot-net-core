@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Ecommerce.Entities.Branding>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2></h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Dashboard","Dashboard")"><i class="zmdi zmdi-home"></i>Dashboard</a></li>
+                        <li class="breadcrumb-item">Brand</li>
+                        <li class="breadcrumb-item active">List of Brand</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="box-header">
+            <a href="@Url.Action("AddBrand","Brand")" class="fa fa-edit btn btn-info">Add New Brand</a>
+            <h3 class="box-title" style="margin-left:300px">All Brand List Show</h3>
+        </div>
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table class="table table-hover product_item_list c_table theme-color mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Brand Name</th>
+                                        <th data-breakpoints="sm xs">Details</th>
+                                        <th data-breakpoints="sm xs md">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        var picURL = item.BrandingPictures != null && item.BrandingPictures.Count > 0 ?
+                                                 "/Images/" +
+                                                     item.BrandingPictures.FirstOrDefault().Picture.PictureURL :
+                                                            "/Images/default.jpg";
+                                        <tr>
+                                            <td><img src="@picURL" width="48" alt="Product img"></td>
+                                            <td><h5>@item.BrandName</h5></td>
+                                            <td><span class="text-muted">@Html.Raw(item.Description)</span></td>
+                                            <td class="btn-group">
+                                                <a href="@Url.Action("EditBrand","Brand",new { ID=item.ID})" class="btn btn-info"><i class="zmdi zmdi-edit"></i>Edit</a>
+                                                <a href="@Url.Action("DeleteBrand","Brand",new { ID=item.ID});" class="btn btn-danger "><i class="zmdi zmdi-delete"></i>Delete</a>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

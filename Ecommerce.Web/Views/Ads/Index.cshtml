@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Ecommerce.Entities.SecoundBanner>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <a href="@Url.Action("AddAds","Ads")" class="fa fa-edit btn btn-info">Add New Ads</a>
+                    <h3 class="box-title" style="margin-left:300px">All Ads List Show</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Ads Name</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var picURL = item.SecoundBannerPictures != null && item.SecoundBannerPictures.Count > 0 ?
+                                         "/Images/" +
+                                             item.SecoundBannerPictures.First().Picture.PictureURL :
+                                                    "/Images/default.jpg";
+                                <tr>
+                                    <td><img src="@picURL" width="48" alt="Product img"></td>
+                                    <td>@item.SBannerName</td>
+                                    <td>@Html.Raw(item.Description)</td>
+                                    <td class="btn-group">
+                                        <a href="@Url.Action("EditAds","Ads",new { ID=item.ID})" class="btn btn-info">Edit</a>
+                                        <button type="button" data-id="@item.ID" class="btn btn-danger bannerDeletebtn">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<script>
+    $(".bannerDeletebtn").click(function () {
+      debugger;
+      var result = confirm("Are you sure delete this");
+      if (result == true) {
+
+          $.ajax({
+              url: "@Url.Action("DeleteAds", "Ads")",
+            method: "post",
+            data: {
+
+            ID: $(this).attr("data-id")
+            }
+          }).done(function (response) {
+              debugger;
+              window.location.href = "@Url.Action("Index", "Ads")";
+              $("#listingArea").html(response);
+          });
+      }
+    });
+</script>

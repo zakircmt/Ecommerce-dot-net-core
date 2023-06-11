@@ -1,0 +1,134 @@
+﻿@model Ecommerce.Web.Models.CreateBannerModel
+@{
+    ViewData["Title"] = "EditBanner";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var picture = Model.BannerPictureList;
+}
+
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="@Url.Action()"><i class="zmdi zmdi-home"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0);">Banner</a></li>
+                        <li class="breadcrumb-item active">Edit Banner Form</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <!-- Basic Validation -->
+            <div class="row clearfix">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="card">
+                        <div class="body">
+                            <form id="EditBannerForm" method="POST" action="@Url.Action("EditBanner","Banner")">
+                                <input type="hidden" value="@Model.ID" name="ID" />
+                                <div class="form-group form-float">
+                                    <input type="text" class="form-control" placeholder="Banner Name" name="BannerName" value="@Model.BannerName" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        Select Pictures
+                                    </label>
+                                    <input id="BannerPictures" type="file" name="BannerPictures" class="form-control" />
+                                    <div id="picturesArea" class="form-group" style="margin-top:20px">
+                                        @if (picture != null && picture.Count > 0)
+                                        {
+                                            foreach (var pictures in picture)
+                                            {
+                                                <img style="height:100px; width:100px" class='image img-thumbnail' src='~/Images/@pictures.Picture.PictureURL' data-id="@pictures.ID" />
+                                            }
+                                        }
+                                        else { 
+                                            <img style="height:100px; width:100px" class='image img-thumbnail' src='~/Images/default.jpg'/>
+                                        }
+                                    </div>
+                                    <input type="hidden" name="BannerPictures" id="picturesIDs" />
+                                </div>
+                                <button id="BannerAddBtn" class="btn btn-raised btn-primary waves-effect" type="button">SUBMIT</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="imageTemplate" style="display:none">
+    <img class='image img-thumbnail' src='' style="height:100px; width:100px" />
+</div>
+<script>
+    $('#BannerAddBtn').click(function () {
+        debugger;
+        var imageIDs = [];
+        $("#picturesArea .image").each(function () {
+            var imageID = $(this).attr("data-id");
+            imageIDs.push(imageID);
+        });
+        $("#PictureIDs").val(imageIDs.join())
+         $.ajax({
+         url: "@Url.Action("EditBanner", "Banner")",
+         type: "post",
+             data: $("#AddBannerForm").serialize()
+     }).done(function (responses) {
+         debugger;
+         alert("Banner Save Succesfully");
+         window.location.href = "@Url.Action("Index","Banner")";
+
+     }).fail(function () {
+
+     });
+    });
+
+    $("#BannerPictures").change(function () {
+          debugger;
+          var pictures = this.files;
+          var picsData = new FormData();
+        for (var i = 0; i < pictures.length; i++) {
+            picsData.append("Picture", pictures[i]);
+        }
+        $.ajax({
+            url: "@Url.Action("UploadPictures","Shared")",
+            type: "post",
+            data: picsData,
+            datatype: "json",
+            processData: false,
+            contentType: false
+        }).done(function (responses) {
+            debugger;
+            for (var i = 0; i < responses.length; i++) {
+                var picResponse = responses[i];
+
+                AttachNewImage(picResponse.pictureUrl, picResponse.id);
+            }
+        }).fail(function () { });
+    });
+
+    function AttachNewImage(imageURL, imageID) {
+        debugger;
+
+        var $newImageHTML = $("#imageTemplate").clone();
+
+        $newImageHTML.find(".image").attr("src", "@Url.Content("/Images/")" + imageURL);
+        $newImageHTML.find(".image").attr("data-id", imageID);
+
+        $("#picturesArea").append($newImageHTML.html());
+
+        RemoveImageOnClick();
+
+    }
+
+    function RemoveImageOnClick() {
+        $("#picturesArea .image").click(function () {
+
+            debugger;
+            $(this).remove();
+
+        });
+    }
+</script>

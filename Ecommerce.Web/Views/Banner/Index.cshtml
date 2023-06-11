@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Ecommerce.Entities.Banner>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <a href="@Url.Action("AddBanner","Banner")" class="fa fa-edit btn btn-info">Add New Banner</a>
+                    <h3 class="box-title" style="margin-left:300px">All Banner List Show</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var picURL = item.BannerPictures != null && item.BannerPictures.Count > 0 ?
+                                         "/Images/" +
+                                             item.BannerPictures.First().Picture.PictureURL :
+                                                    "/Images/default.jpg";
+                                <tr>
+                                    @if (picURL != null && picURL.Length > 0)
+                                    {
+                                        <td><img src="@picURL" width="48" alt="Product img"></td>
+                                    }
+                                    else { 
+                                        <td><img src="~/Images/default.jpg" width="48" alt="Product img"></td>
+                                    }
+                                    
+                                    <td>@item.BannerName</td>
+                                    <td class="btn-group">
+                                        <a href="@Url.Action("EditBanner","Banner",new { ID=item.ID})" class="btn btn-info">Edit</a>
+                                        <button type="button" data-id="@item.ID" class="btn btn-danger bannerDeletebtn">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+
+
+<script>
+    $(".bannerDeletebtn").click(function () {
+      debugger;
+      var result = confirm("Are you sure delete this");
+      if (result == true) {
+
+          $.ajax({
+              url: "@Url.Action("Delete","Banner")",
+              method: "post",
+              data: {
+
+                  ID: $(this).attr("data-id")
+              }
+          }).done(function (response) {
+              debugger;
+              window.location.href = "@Url.Action("Index", "Banner")";
+              $("#listingArea").html(response);
+          });
+      }
+  });
+</script>
